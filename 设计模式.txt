@@ -1,0 +1,54 @@
+动态代理
+    特点:字节码随用随创建和加载
+    作用:不修改源码的基础上对方法进行修改增强
+    分类
+        基于接口的动态代理
+            涉及类:Proxy
+            提供者:JDK
+
+            Product product = new Product();
+                    ProductImpl proimpl = (ProductImpl) Proxy.newProxyInstance(product.getClass().getClassLoader(),
+                            product.getClass().getInterfaces(), new InvocationHandler() {
+                        /**
+                            proxy 代理对象的引用
+                            method 当前执行的方法
+                            args 执行的方法所需的参数
+
+                            此方法和被代理的对象的方法有相同的返回值
+                        */
+                        @Override
+                        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                            Object returnValue = null;
+                            Float money = (Float) args[0];
+                            if ("saleProduct".equals(method.getName())){
+                                returnValue = method.invoke(product,money * 0.8f);
+                            }
+                            return returnValue;
+                        }
+                    });
+                    proimpl.saleProduct(1000f);
+
+
+            如何创建代理对象
+                Proxy.newProxyInstance(对象.getClass().getClassLoader(),
+                                       对象.getClass().getInterfaces(),
+                                       new InvocationHandler(){})
+            创建条件
+                被代理的类最少实现一个接口,如果没有就不能使用
+            newProxyInstance的参数
+                ClassLoader类加载器
+                    加载对象字节码,固定写法--对象.getClass().getClassLoader()
+                Class[]
+                    让代理对象和被代理对象有相同的方法,固定写法--对象.getClass().getInterfaces()
+                InvocationHandler
+                    对代理方法的增强,一般用匿名内部类书写,也可以新建类继承这个类的方法然后引用新建类
+        基于之类的动态代理
+            涉及类:Enhancer
+            提供者:第三方cglib库
+            如何创建代理对象:Enhancer类中的create方法
+            创建条件:被代理的类不能是最终类
+            create方法的参数
+                Class:被代理对象的字节码
+                Callback:提供增强的代码
+                    一般写一个该接口的实现类
+
