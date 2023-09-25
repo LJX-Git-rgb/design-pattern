@@ -1,4 +1,4 @@
-package proxy.pro;
+package proxy;
 
 public class Product implements ProductImpl{
 
